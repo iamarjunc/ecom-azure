@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Popup</title>
+    <style>
+        body {}
+        
+        .chat-popup {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            right: 15px;
+            border: 3px solid #f1f1f1;
+            z-index: 9;
+            background-color: white;
+            width: 350px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #007bff, #00d4ff);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .chat-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+        
+        .messages {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: #dcf8c6;
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+        }
+        
+        .chat-footer {
+            display: flex;
+            padding: 10px 20px;
+            border-top: 1px solid #f1f1f1;
+            background-color: white;
+        }
+        
+        #chatInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        
+        .send-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+        
+        .open-chat-btn {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #007bff, #00d4ff);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            font-size: 16px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }.service-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-popup" id="chatPopup">
+        <div class="chat-header">
+            <h4>Chat with us</h4>
+            <button class="close-btn" onclick="closeChat()">×</button>
+        </div>
+        <div class="chat-body">
+            <div class="messages" id="messages">
+                <!-- Messages will appear here -->
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <button class="open-chat-btn" onclick="openChat()">Chat</button>
+
+    <script>
+        let currentService = null;
+
+        function openChat() {
+            document.getElementById("chatPopup").style.display = "block";
+            showServiceOptions();
+        }
+        
+        function closeChat() {
+            document.getElementById("chatPopup").style.display = "none";
+        }
+        
+        function sendMessage() {
+            const inputField = document.getElementById("chatInput");
+            const message = inputField.value.trim();
+            if (message) {
+                addUserMessage(message);
+                handleUserInput(message);
+                inputField.value = "";
+            }
+        }
+
+        function addUserMessage(message) {
+            const messagesContainer = document.getElementById("messages");
+            const userMessageElement = document.createElement("div");
+            userMessageElement.classList.add("message", "user-message");
+            userMessageElement.textContent = message;
+            messagesContainer.appendChild(userMessageElement);
+            scrollToBottom();
+        }
+
+        function addBotMessage(message) {
+            const messagesContainer = document.getElementById("messages");
+            const botMessageElement = document.createElement("div");
+            botMessageElement.classList.add("message", "bot-message");
+            botMessageElement.innerHTML = message; // Use innerHTML to interpret HTML
+            messagesContainer.appendChild(botMessageElement);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById("messages");
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showServiceOptions() {
+            addBotMessage(`Welcome! Please select a service:<br>
+                <button class="service-btn" onclick="selectService('search')">Search an item</button>
+                <button class="service-btn" onclick="selectService('track')">Track order status</button>
+                <button class="service-btn" onclick="selectService('complaint')">File a complaint</button>
+                <button class="service-btn" onclick="selectService('other')">Other</button>`);
+        }
+
+        function selectService(service) {
+            currentService = service;
+            switch (service) {
+                case 'search':
+                    addBotMessage("Please type the name of the item you want to search for.");
+                    break;
+                case 'track':
+                    addBotMessage("Please provide your order ID.");
+                    break;
+                case 'complaint':
+                    addBotMessage("Please describe your issue.");
+                    break;
+                case 'other':
+                    addBotMessage("Please type your query.");
+                    break;
+                default:
+                    addBotMessage("I didn't understand that. Please select a service:");
+                    showServiceOptions();
+            scrollToBottom();
+
+            }
+        }
+
+        function handleUserInput(message) {
+            if (currentService) {
+                switch (currentService) {
+                    case 'search':
+                        // Call backend to search for the item
+                        fetch(`/search?q=${message}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.results.length > 0) {
+                                    const results = data.results.map(item => {
+                                        const productDetailUrl = `/product-details/${item.id}`;
+                                        return `<a href="${productDetailUrl}">${item.title} <br><img src="${item.image}" alt="${item.title}" style="max-width: 100%;"></a>`;
+                                    }).join('<br><br>');
+                                    addBotMessage(`Here are the results for "${message}":<br><br>${results}`);
+                                } else {
+                                    addBotMessage(`No results found for "${message}".`);
+                                }
+                                currentService = null; // Reset the service
+                                showServiceOptions(); // Show service options again
+                            })
+                            .catch(error => {
+                                addBotMessage(`An error occurred: ${error.message}`);
+                                currentService = null; // Reset the service
+                                showServiceOptions(); // Show service options again
+                            });
+                        addBotMessage(`Searching for "${message}"...`);
+                        break;
+            scrollToBottom();
+
+                    
+                    case 'track':
+                        // Call backend to track the order status
+                        fetch(`/cart/track-order?id=${message}`)
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.json();
+                                } else {
+                                    return response.text().then(text => { throw new Error(text); });
+                                }
+                            })
+                            .then(data => {
+                                if (data.order) {
+                                    const order = data.order;
+                                    let itemsHtml = order.items.map(item => 
+                                        `<div style="margin-bottom: 10px;">
+                                            <strong>${item.product_name}</strong><br>
+                                            Quantity: ${item.quantity}<br>
+                                            Price: ${item.price}<br>
+                                            ${item.image ? `<img src="${item.image}" alt="${item.product_name}" style="width: 100px; height: auto;"/>` : ''}
+                                        </div>`
+                                    ).join('<br>');
+                                    
+                                    addBotMessage(`Order Details:<br>
+                                        ID: ${order.id}<br>
+                                        Status: ${order.status}<br>
+                                        Total Price: ${order.total_price}<br>
+                                        Created At: ${order.created_at}<br>
+                                        Updated At: ${order.updated_at}<br><br>
+                                        Items:<br>${itemsHtml}`
+                                    );
+                                } else {
+                                    addBotMessage(`No order found with ID "${message}".`);
+                                }
+                                currentService = null; // Reset the service
+                                showServiceOptions(); // Show service options again
+                            })
+                            .catch(error => {
+                                addBotMessage(`An error occurred: ${error.message}`);
+                                currentService = null; // Reset the service
+                                showServiceOptions(); // Show service options again
+                            });
+                        addBotMessage(`Tracking order ID "${message}"...`);
+                        break;
+            scrollToBottom();
+
+                    
+                    case 'complaint':
+                        // Call backend to file a complaint
+                        fetch('/file-complaint', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ complaint: message })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                addBotMessage(`Your complaint has been filed. Reference ID: ${data.refId}`);
+                            } else {
+                                addBotMessage(`Failed to file complaint: ${data.message}`);
+                            }
+                            currentService = null; // Reset the service
+                            showServiceOptions(); // Show service options again
+                        })
+                        .catch(error => {
+                            addBotMessage(`An error occurred: ${error.message}`);
+                            currentService = null; // Reset the service
+                            showServiceOptions(); // Show service options again
+                        });
+                        addBotMessage(`Filing your complaint...`);
+                        break;
+                    
+                    case 'other':
+                        // Handle other queries here
+                        addBotMessage(`You asked: "${message}". Thank you for your query. We will get back to you shortly.`);
+                        currentService = null; // Reset the service
+                        showServiceOptions(); // Show service options again
+                        break;
+                    
+                    default:
+                        addBotMessage("I didn't understand that. Please select a service:");
+                        currentService = null;
+                        showServiceOptions();
+                }
+            } else {
+                addBotMessage("Please select a service:");
+                showServiceOptions();
+            }
+        }
+    </script>
+</body>
+</html>

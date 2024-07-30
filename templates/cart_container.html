@@ -1,0 +1,70 @@
+{% load static %}
+{% load multiply %}
+{% load gettotal %}
+<style>
+    {% if cart and cart.added_items.all %}
+    .cart-page {
+        margin: 8% auto;
+    }
+    {% endif %}
+</style>
+<div class="small-container cart-page">
+    {% if cart and cart.added_items.all %}
+    <table>
+        <tbody><tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+        {% for cart_item in cart.added_items.all %}
+        <tr>
+            <td>
+                <div class="cart-info">
+                    <img src="{{cart_item.product.image.url}}">
+                    <div>
+                        <p>{{cart_item.product.title}}</p>
+                        <small>Price: ₹{{cart_item.product.price}}</small>
+                        <br>
+                        <a href="{% url "remove_item" cart_item.id %}">Remove</a>
+                    </div>
+                </div>
+            </td>
+            <td><input type="number" disabled value="{{cart_item.quantity}}"></td>
+            <td>₹{% multiply cart_item.product.price   cart_item.quantity %}</td>
+        </tr>
+        {% endfor %}
+            
+        </tbody>
+    </table>
+    <div class="total-price">
+        <table>
+            <tbody><tr>
+                <td>Total</td>
+                <td>₹{% gettotal cart %}</td>
+            </tr>
+            <tr>
+                <td colspan = '2'>
+                    <form method ='POST' enctype="multipart/form-data" action = '{% url "checkout" %}'>
+                        {% csrf_token %}
+                        <input type="hidden" name = "total" value = "{% gettotal cart %}"/>
+                        <button type="submit" class="btn">Checkout</button>
+                    </form>
+                </td>
+            </tr>
+            {% comment %} <tr>
+                <td>Tax</td>
+                <td>$35.00</td> 
+            </tr> {% endcomment %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="row">
+        
+        <div class="col-4">
+            <img src="https://s3.ap-south-1.amazonaws.com/www.aiswaryaoffeset.io/static/img/notcart.png">
+            <h4 style="text-align:center">Your Cart is Empty</h4>
+        </div>       
+    </div>
+    {% endif %}
+</div>

@@ -1,0 +1,60 @@
+{% load static %}
+<div class="row">
+    <div class="col-2">
+        <img src="https://s3.ap-south-1.amazonaws.com/www.aiswaryaoffeset.io/static/img/img1.png" width="100%">
+    </div>
+    <div class="col-2">
+        {% if messages %}
+        <div class="msg-container">
+            {% for message in messages %}
+            
+                <li class="{{message.tags}}">{{message}}</li>
+            
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="form-container">
+            <div class="form-btn">
+                <span onclick="login()">Login</span>
+                <span onclick="register()">Register</span>
+                <hr id="Indicator" style="transform: translate(0px);">
+            </div>
+            <form id="LoginForm" method="post" enctype="multipart/form-data" style="transform: translateX(300px);">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username">
+                <input type="password" name="password" placeholder="Password">
+                <button type="submit" name="login" class="btn">Login</button>
+                <a href="">Forget Password</a>
+            </form>
+
+            <form id="RegForm" method="post" enctype="multipart/form-data" style="transform: translateX(300px);">
+                {% csrf_token %}
+                <input type="text" name="username" maxlength = "10" minlenght="3" required placeholder="Username">
+                <input type="email" name="email" required placeholder="Email">
+                <input type="text" name="address" minlenght="3" required placeholder="Address">
+                <input type="text" name="phone" minlenght="10" required placeholder="Phone Number">
+                <input type="password" required minlength = "6" name="password" placeholder="Password">
+                <button type="submit" name="register" class="btn">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var LoginForm = document.getElementById("LoginForm");
+    var RegForm = document.getElementById("RegForm");
+    var Indicator = document.getElementById("Indicator");
+    function register() {
+        RegForm.style.transform = "translatex(0px)";
+        LoginForm.style.transform = "translatex(0px)";
+        Indicator.style.transform = "translateX(100px)";
+
+    }
+    function login() {
+        RegForm.style.transform = "translatex(300px)";
+        LoginForm.style.transform = "translatex(300px)";
+        Indicator.style.transform = "translate(0px)";
+
+    }
+</script>

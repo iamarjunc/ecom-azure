@@ -1,0 +1,54 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="small-container single-product">
+    <div class="row">
+        <div class="col-2">
+            <img src="{{product.image.url}}" width="100%" id="ProductImg">
+
+          
+
+        </div>
+        <div class="col-2">
+            <p>{{product.title}}</p>
+            <h1>{{product.title}}</h1>
+            <h4>₹{{product.price}}</h4>
+            {% comment %} <select>
+                <option>Select Size</option>
+                <option>XXL</option>
+                <option>XL</option>
+                <option>L</option>
+                <option>M</option>
+                <option>S</option>
+            </select> {% endcomment %}
+            <form method = "post" action = "{% url 'add_to_cart' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" value="{{product.id}}" name="product_id">
+            <input type="number" name = "quantity" value="1">
+            <button type="submit" class="btn">Add To Cart</button>
+
+            <h3>Product Details <i class="fa fa-indent"></i></h3>
+            <br>
+            <p>{{product.description}}</p>
+        </div>
+    </div>
+</div>
+
+    
+<!-- Similar Products Section -->
+<div class="small-container">
+    <div class="row row-2">
+        <h2>You might also like</h2>
+    </div>
+    <div class="row">
+        {% for similar_product in similar_products %}
+        <div class="col-4">
+            <a href="{% url 'detail_product' similar_product.id %}">
+                <img src="{{similar_product.image.url}}" alt="{{similar_product.title}}">
+                <h4>{{similar_product.title}}</h4>
+                <p>₹{{similar_product.price}}</p>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>

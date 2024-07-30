@@ -1,0 +1,18 @@
+{% extends "blank_layout.html" %}
+{% load static %}
+
+{% block banner %}
+    {% include "account_banner.html" %}
+{% endblock banner %}
+
+{% block content %}
+    {% if register %}
+        <script>
+            register()
+        </script>
+    {% else %}
+        <script>
+            login()
+        </script>
+    {% endif %}
+{% endblock content %}

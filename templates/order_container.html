@@ -1,0 +1,50 @@
+{% load static %}
+{% load getstatus %}
+
+<style>
+    {% if orders_with_items %}
+    .cart-page {
+        margin: 8% auto;
+    }
+    {% endif %}
+</style>
+<div class="small-container cart-page">
+    {% if orders_with_items %}
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order_with_items in orders_with_items %}
+            <tr>
+                <td>{{ order_with_items.order.id }}</td>
+                <td>{{ order_with_items.order.created_at }}</td>
+                <td>{{ order_with_items.order.total_price }}</td>
+                <td>{% getstatus order_with_items.order.order_status %}</td>
+                <td class="itm">
+                    {% for item in order_with_items.items %}
+                       <b> {{ item.product }} </b>- Quantity: {{ item.quantity }}<br><br>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="small-container">
+        <div class="row">
+            <div class="col-4">
+                <img  src="https://s3.ap-south-1.amazonaws.com/www.aiswaryaoffeset.io/static/img/not found 2.png">
+                <h1 style="text-align:center">NOT FOUND</h1 >
+                <h4 style="text-align:center">your order is empty</h4 >
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>

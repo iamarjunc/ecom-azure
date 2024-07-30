@@ -1,0 +1,114 @@
+{% load static %}
+{% load chunks %}
+{% if products %}
+<style>
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .filter-icon {
+        cursor: pointer;
+        text-decoration: none;
+        color: #000;
+        font-size: 24px;
+    }
+    
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        min-width: 160px;
+    }
+    
+    .dropdown-menu a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+    
+    .dropdown-menu a:hover {
+        background-color: #f1f1f1;
+    }
+    
+    .show {
+        display: block;
+    }
+    
+</style>
+<div class="small-container">
+    <div class="row row-2">
+        <h2>All Products</h2>
+        <div class="dropdown">
+            <a href="#" class="filter-icon dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-filter"></i> <!-- Font Awesome filter icon -->
+            </a>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a class="dropdown-item" href="?q={{ query }}&sort=price_asc">Price: Low to High</a>
+                <a class="dropdown-item" href="?q={{ query }}&sort=price_desc">Price: High to Low</a>
+                <a class="dropdown-item" href="?q={{ query }}&sort=newest">Newest First</a>
+                <a class="dropdown-item" href="?q={{ query }}&sort=popularity">Popularity</a>
+            </div>
+
+        </div>
+    </div>
+    {% for product_chunks in products|chunks:4 %}
+    <div class="row">
+        {% for product in product_chunks %}
+        
+        <div class="col-4">
+            <a href="{% url 'detail_product' product.id %}"><img src="{{product.image.url}}"></a>
+            <h4>{{ product.title }}</h4>
+            <p>₹{{ product.price }}</p>
+        </div>
+        {% endfor %}        
+    </div>
+    
+    {% endfor %}
+    
+    <div class="page-btn">
+        {% if products.has_previous %}
+        <a href="?page={{products.previous_page_number}}"><span><<</span></a>        
+        {% endif %}
+        {% for i in products.paginator.page_range %}
+        <a href="?page={{i}}"><span>{{i}}</span></a>        
+        {% endfor %}
+        {% if products.has_next %}
+        <a href="?page={{products.next_page_number}}"><span>>></span></a>        
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="small-container">
+    <div class="row">
+        <div class="col-4">
+            <img  src="https://s3.ap-south-1.amazonaws.com/www.aiswaryaoffeset.io/static/img/not found 1.png">
+            <h1 style="text-align:center">NOT FOUND</h1>
+            <h4 style="text-align:center">searched item was not found</h4>
+        </div>
+    </div>
+</div>
+{% endif %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var filterIcon = document.getElementById('dropdownMenuButton');
+        var dropdownMenu = document.getElementById('dropdownMenu');
+        
+        filterIcon.addEventListener('click', function (event) {
+            event.preventDefault();
+            dropdownMenu.classList.toggle('show');
+        });
+        
+        window.onclick = function (event) {
+            if (!event.target.matches('.filter-icon') && !event.target.matches('.filter-icon i')) {
+                if (dropdownMenu.classList.contains('show')) {
+                    dropdownMenu.classList.remove('show');
+                }
+            }
+        };
+    });
+    
+</script>

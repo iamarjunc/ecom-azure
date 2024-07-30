@@ -1,0 +1,27 @@
+{% extends "blank_layout.html" %}
+{% load static %}
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+    
+    <div class="small-container cart-page">
+       
+        <h1 class="{{ message.tags }}">{{ message }}</h1>
+        {% if message.tags == 'success' %}
+        <div class="row">
+            
+            <div class="col-4">
+                <img src="https://s3.ap-south-1.amazonaws.com/www.aiswaryaoffeset.io/static/img/Designer (4).png" alt="Success Image">
+            </div>
+        </div>
+
+        {% endif %}
+   
+</div>
+    
+    
+    {% endfor %}
+    {% else %}
+    {% include "cart_container.html" %}
+{% endif %}
+{% endblock content %}
