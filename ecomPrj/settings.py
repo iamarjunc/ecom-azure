@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['.vercel.app','192.168.0.16','192.168.1.6','*', '.now.sh','tst-
     'tst-fkbgengtdjbcc0fw.southindia-01.azurewebsites.net',]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://tst-fkbgengtdjbcc0fw.southindia-01.azurewebsites.net',
+    'https://testdjango-hddahtgqgvcwezhq.southindia-01.azurewebsites.net',
 ]
 
 # Application definition
